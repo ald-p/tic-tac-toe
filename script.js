@@ -9,6 +9,7 @@ const gameBoard = (() => {
   const board = ['','','','','','','','',''];
 
   const updateGameBoard = (player) => {
+    if (board[player.locationPlayed] !== '') return;
     board.splice(player.locationPlayed, 1, player.sign);
     return board;
   }
@@ -33,10 +34,9 @@ const gameController = (() => {
   const playRound = (e) => {
     currentPlayer.locationPlayed = Number(e.target.dataset.val);
     const updatedBoard = gameBoard.updateGameBoard(currentPlayer);
-    console.log(updatedBoard);
     displayController.displayBoardContent(updatedBoard);
     switchPlayer();
-    displayController.displayCurrentPlayer(currentPlayer);
+    displayController.displayNextPlayer(currentPlayer);
   }
 
   return { playRound };
@@ -51,11 +51,11 @@ const displayController = (() => {
     gameBoardEl.forEach( (btn, idx) => btn.textContent = boardArr[idx]);
   }
 
-  const displayCurrentPlayer = (currentPlayer) => {
+  const displayNextPlayer = (currentPlayer) => {
     currentPlayerEl.textContent = `Player ${currentPlayer.sign}'s turn`;
   }
   
-  return { displayBoardContent, displayCurrentPlayer };
+  return { displayBoardContent, displayNextPlayer };
 
 })();
 
