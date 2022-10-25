@@ -50,6 +50,10 @@ body {
   background-color: lightgray;
 }
 
+.game-btn:disabled {
+  color: black;
+}
+
 .current-player {
   font-size: 2rem;
 }

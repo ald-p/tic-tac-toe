@@ -9,7 +9,6 @@ const gameBoard = (() => {
   const board = ['','','','','','','','',''];
 
   const updateGameBoard = (player) => {
-    if (board[player.locationPlayed] !== '') return false;
     board.splice(player.locationPlayed, 1, player.sign);
     return board;
   }
@@ -61,9 +60,10 @@ const gameController = (() => {
   }
   
   const playRound = (e) => {
+    e.target.disabled = true
     currentPlayer.locationPlayed = Number(e.target.dataset.val);
+
     const updatedBoard = gameBoard.updateGameBoard(currentPlayer);
-    if (!updatedBoard) return;
     displayController.displayBoardContent(updatedBoard);
 
     if (!determineWinner()) {
@@ -73,7 +73,6 @@ const gameController = (() => {
       const winner = determineWinner();
       displayController.displayWinner(winner);
     }
-
   }
 
   return { playRound };
@@ -93,9 +92,11 @@ const displayController = (() => {
   }
 
   const displayWinner = (winner) => {
-    currentPlayerEl.textContent = `Player ${winner.winnerSign} wins!`;
+    currentPlayerEl.textContent = 
+    `Player ${winner.winnerSign} wins! Click Reset to play again.`;
     const winningGameBtns = gameBoardEl.filter( el => winner.winningCombo.includes(Number(el.dataset.val)));
     winningGameBtns.forEach( btn => btn.classList.add('winning-btn'));
+    gameBoardEl.forEach( btn => btn.setAttribute('disabled', true));
   }
   
   return { displayBoardContent, displayNextPlayer, displayWinner };
