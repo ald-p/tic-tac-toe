@@ -34,6 +34,11 @@ const gameController = (() => {
     }
   }
 
+  const checkTie = () => {
+    const currentBoard = gameBoard.getBoardContent([0,1,2,3,4,5,6,7,8]);
+    return !currentBoard.includes('') ? true : false;
+  }
+
   const determineWinner = () => {
     const winCombos = [[0,1,2], 
     [3,4,5], 
@@ -66,9 +71,12 @@ const gameController = (() => {
     const updatedBoard = gameBoard.updateGameBoard(currentPlayer);
     displayController.displayBoardContent(updatedBoard);
 
+    checkTie();
+
     if (!determineWinner()) {
       switchPlayer();
       displayController.displayNextPlayer(currentPlayer);
+      if (checkTie()) displayController.displayTie();
     } else {
       const winner = determineWinner();
       displayController.displayWinner(winner);
@@ -98,7 +106,11 @@ const displayController = (() => {
     winningGameBtns.forEach( btn => btn.classList.add('winning-btn'));
     gameBoardEl.forEach( btn => btn.setAttribute('disabled', true));
   }
+
+  const displayTie = () => {
+    currentPlayerEl.textContent = `Tie game! Click Reset to play again.`;
+  }
   
-  return { displayBoardContent, displayNextPlayer, displayWinner };
+  return { displayBoardContent, displayNextPlayer, displayWinner, displayTie };
 })();
 
