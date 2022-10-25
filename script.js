@@ -17,7 +17,11 @@ const gameBoard = (() => {
     return !idxArr ? idxArr : idxArr.map( idx => board[idx]);
   }
 
-  return { updateGameBoard, getBoardContent };
+  const resetBoard = () => {
+    board.forEach( (item, idx) => board[idx] = '');
+  }
+
+  return { updateGameBoard, getBoardContent, resetBoard };
 })();
 
 const gameController = (() => {
@@ -71,8 +75,6 @@ const gameController = (() => {
     const updatedBoard = gameBoard.updateGameBoard(currentPlayer);
     displayController.displayBoardContent(updatedBoard);
 
-    checkTie();
-
     if (!determineWinner()) {
       switchPlayer();
       displayController.displayNextPlayer(currentPlayer);
@@ -83,13 +85,21 @@ const gameController = (() => {
     }
   }
 
-  return { playRound };
+  const resetGame = () => {
+    currentPlayer = playerX;
+    displayController.resetDisplay();
+    gameBoard.resetBoard();
+  }
+
+  return { playRound, resetGame };
 })();
 
 const displayController = (() => {
   const currentPlayerEl = document.querySelector('.current-player');
+  const resetBtn = document.querySelector('.reset');
   const gameBoardEl = Array.from(document.querySelectorAll('.game-btn'));
   gameBoardEl.forEach( btn => btn.addEventListener('click', gameController.playRound, false));
+  resetBtn.addEventListener('click', gameController.resetGame, false);
 
   const displayBoardContent = (boardArr) => {
     gameBoardEl.forEach( (btn, idx) => btn.textContent = boardArr[idx]);
@@ -104,13 +114,22 @@ const displayController = (() => {
     `Player ${winner.winnerSign} wins! Click Reset to play again.`;
     const winningGameBtns = gameBoardEl.filter( el => winner.winningCombo.includes(Number(el.dataset.val)));
     winningGameBtns.forEach( btn => btn.classList.add('winning-btn'));
-    gameBoardEl.forEach( btn => btn.setAttribute('disabled', true));
+    gameBoardEl.forEach( btn => btn.disabled = true);
   }
 
   const displayTie = () => {
     currentPlayerEl.textContent = `Tie game! Click Reset to play again.`;
   }
+
+  const resetDisplay = () => {
+    gameBoardEl.forEach( btn => {
+      btn.disabled = false;
+      btn.textContent = '';
+      btn.className = 'game-btn';
+    });
+    currentPlayerEl.textContent = `Player X's turn`;
+  }
   
-  return { displayBoardContent, displayNextPlayer, displayWinner, displayTie };
+  return { displayBoardContent, displayNextPlayer, displayWinner, displayTie, resetDisplay };
 })();
 
