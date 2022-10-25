@@ -45,7 +45,7 @@ body {
   transition: all ease-in 0.2s;
 }
 
-.game-btn:hover {
+.game-btn:hover, .winning-btn {
   transform: scale(1.05);
   background-color: lightgray;
 }

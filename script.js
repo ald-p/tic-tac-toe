@@ -56,7 +56,7 @@ const gameController = (() => {
     if (winningCombo === '') {
       return false;
     } else {
-      return (gameBoard.getBoardContent(winningCombo))[0];
+      return {winnerSign: (gameBoard.getBoardContent(winningCombo))[0], winningCombo: winningCombo};
     }
   }
   
@@ -65,9 +65,15 @@ const gameController = (() => {
     const updatedBoard = gameBoard.updateGameBoard(currentPlayer);
     if (!updatedBoard) return;
     displayController.displayBoardContent(updatedBoard);
-    switchPlayer();
-    displayController.displayNextPlayer(currentPlayer);
-    console.log(determineWinner());
+
+    if (!determineWinner()) {
+      switchPlayer();
+      displayController.displayNextPlayer(currentPlayer);
+    } else {
+      const winner = determineWinner();
+      displayController.displayWinner(winner);
+    }
+
   }
 
   return { playRound };
@@ -75,7 +81,7 @@ const gameController = (() => {
 
 const displayController = (() => {
   const currentPlayerEl = document.querySelector('.current-player');
-  const gameBoardEl = document.querySelectorAll('.game-btn');
+  const gameBoardEl = Array.from(document.querySelectorAll('.game-btn'));
   gameBoardEl.forEach( btn => btn.addEventListener('click', gameController.playRound, false));
 
   const displayBoardContent = (boardArr) => {
@@ -85,7 +91,13 @@ const displayController = (() => {
   const displayNextPlayer = (currentPlayer) => {
     currentPlayerEl.textContent = `Player ${currentPlayer.sign}'s turn`;
   }
+
+  const displayWinner = (winner) => {
+    currentPlayerEl.textContent = `Player ${winner.winnerSign} wins!`;
+    const winningGameBtns = gameBoardEl.filter( el => winner.winningCombo.includes(Number(el.dataset.val)));
+    winningGameBtns.forEach( btn => btn.classList.add('winning-btn'));
+  }
   
-  return { displayBoardContent, displayNextPlayer };
+  return { displayBoardContent, displayNextPlayer, displayWinner };
 })();
 
